@@ -249,6 +249,7 @@ async function onAuthChange(user) {
   if (!user) return showSignIn();
   try {
     App.lab = await App.store.get('meta', 'lab');
+    if (!App.lab && App.store.mode === 'demo') { await seedDemoLab(user); App.lab = await App.store.get('meta', 'lab'); }
     if (!App.lab) return showSetup();
     App.member = await App.store.get('members', user.uid);
     if (!App.member && App.store.mode === 'demo') {
@@ -279,11 +280,12 @@ ACT.signOut = async () => {
 
 function showSignIn(mode = 'in') {
   if (App.store.mode === 'demo') {
-    showAuthScreen(`<div class="brand-mark">${ICON.flask}</div><h1>Lab Inventory</h1>
-      <p class="lead">Try the app in demo mode. Nothing is sent to a server, and your existing inventory is not touched.</p>
+    showAuthScreen(`<div class="brand-mark">${ICON.flask}</div><h1>Lab Inventory demo</h1>
+      <p class="lead">Look around a sample lab with antibodies, reagents, cell lines, mice and experiments. You are its admin, so you can try everything.</p>
+      <p class="muted small">Everything you do stays in this browser only. Nothing is sent to a server.</p>
       <form id="demoForm" class="stack">
-        <label class="field"><span>Your name</span><input id="demoName" required autocomplete="name" placeholder="e.g. Fatemeh A."></label>
-        <button class="btn primary block">Open demo</button>
+        <label class="field"><span>Your name</span><input id="demoName" required autocomplete="name" placeholder="e.g. Alex"></label>
+        <button class="btn primary block">Open the demo</button>
       </form>`);
     $('#demoForm').addEventListener('submit', e => { e.preventDefault(); const n = $('#demoName').value.trim(); if (n) App.store.signInDemo(n); });
     return;
