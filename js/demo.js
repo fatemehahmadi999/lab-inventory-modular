@@ -32,9 +32,12 @@ async function seedDemoLab(user) {
   // Reagents & media
   rec('reagents', { name: 'PBS (1x)', type: 'Buffer', company: 'Gibco', catalog: '10010023', size: '500 mL', location: 'Shelf 3', hazards: [], files: [] }, one(6, 'bottles', 2));
   const bsa = rec('reagents', { name: 'BSA, fraction V', type: 'Reagent', company: 'Sigma-Aldrich', catalog: 'A9418', size: '100 g', location: 'Fridge 1', hazards: [], files: [] }, one(40, 'g', 10));
-  rec('reagents', { name: 'DAPI', type: 'Chemical', company: 'Thermo Fisher', catalog: 'D1306', size: '10 mg', location: 'Freezer −20 °C, drawer 2', hazards: ['Irritant / harmful'], expiry: iso(-5), files: [] }, one(1, 'vials', 1));
+  rec('reagents', { name: 'DAPI', type: 'Chemical', company: 'Thermo Fisher', catalog: 'D1306', size: '10 mg', location: 'Freezer −20 °C, drawer 2', hazards: ['Irritant / harmful', 'Health hazard'], flag: 'Orange', expiry: iso(-5), files: [] }, one(1, 'vials', 1));
   rec('reagents', { name: 'DMEM, high glucose', type: 'Medium', company: 'Gibco', catalog: '41965039', size: '500 mL', location: 'Fridge 3', opened: iso(-12), expiry: iso(40), hazards: [], files: [] }, one(4, 'bottles', 2));
-  rec('reagents', { name: 'Methanol', type: 'Chemical', company: 'VWR', catalog: '20847.307', size: '2.5 L', location: 'Flammables cabinet', hazards: ['Flammable', 'Toxic', 'Health hazard'], files: [] }, one(2, 'bottles', 1));
+  rec('reagents', { name: 'Methanol', type: 'Chemical', company: 'VWR', catalog: '20847.307', size: '2.5 L', location: 'Flammables cabinet', hazards: ['Flammable', 'Toxic', 'Health hazard'], flag: 'Red', files: [] }, one(2, 'bottles', 1));
+
+  rec('reagents', { name: 'Sodium hydroxide, 1 M', type: 'Chemical', company: 'Merck', catalog: '1.09137', size: '1 L', location: 'Corrosives cabinet', hazards: ['Corrosive'], flag: 'Yellow', files: [] }, one(3, 'bottles', 1));
+  rec('reagents', { name: 'Paraformaldehyde 4%', type: 'Chemical', company: 'Thermo Fisher', catalog: 'J61899', size: '500 mL', location: 'Fume hood cabinet', hazards: ['Flammable', 'Irritant / harmful', 'Health hazard'], flag: 'Red', files: [] }, one(2, 'bottles', 1));
 
   // Kits, primers, plasmids
   rec('kits', { name: 'RNeasy Mini Kit', company: 'Qiagen', catalog: '74104', lot: '172034', location: 'Shelf 1', expiry: iso(180), files: [] }, one(2, 'kits', 1));
@@ -58,6 +61,31 @@ async function seedDemoLab(user) {
     procedure: '<h3>Deparaffinize and retrieve</h3><ol><li>Bake slides 1 h at 60 °C.</li><li>Xylene 2 × 5 min, ethanol series, water.</li><li>Antigen retrieval in citrate pH 6, 20 min at 95 °C.</li></ol><h3>Stain</h3><ol><li>Block in 1% BSA for 1 h.</li><li>Primary antibody overnight at 4 °C.</li><li>Wash 3 × 5 min in PBS, then DAPI 5 min.</li></ol>',
     files: [] });
   rec('protocols', { name: 'Thawing frozen cell lines', version: '1.0', summary: 'Quick thaw at 37 °C and wash out DMSO before plating.', materials: [['DMEM, high glucose', '10', 'mL', 'pre-warmed']], procedure: '<ol><li>Thaw vial in a 37 °C water bath for 1–2 min.</li><li>Transfer into 10 mL warm medium and spin 5 min at 300 g.</li><li>Resuspend and plate.</li></ol>', files: [] });
+
+  // Order links (supplier search pages for each catalog number). CD3 and Methanol are left without one on purpose.
+  const links = {
+    'CD45': 'https://www.biolegend.com/en-us/search-results?Keywords=304012',
+    'CD68': 'https://www.abcam.com/en-us/search?keywords=ab955',
+    'EpCAM': 'https://www.miltenyibiotec.com/search?query=130-111-116',
+    'Ki-67': 'https://www.thermofisher.com/search/results?query=51-5698-82',
+    'PBS (1x)': 'https://www.thermofisher.com/search/results?query=10010023',
+    'BSA, fraction V': 'https://www.sigmaaldrich.com/search/a9418?focus=products',
+    'DAPI': 'https://www.thermofisher.com/search/results?query=D1306',
+    'DMEM, high glucose': 'https://www.thermofisher.com/search/results?query=41965039',
+    'RNeasy Mini Kit': 'https://www.qiagen.com/search?query=74104',
+    'Opal 6-Plex Detection Kit': 'https://www.akoyabio.com/?s=NEL871001KT',
+    'GAPDH forward': 'https://www.idtdna.com/pages/products/custom-dna-rna/dna-oligos',
+    'GAPDH reverse': 'https://www.idtdna.com/pages/products/custom-dna-rna/dna-oligos',
+    'MDA-MB-231': 'https://www.atcc.org/products/htb-26',
+    'MCF7': 'https://www.atcc.org/products/htb-22'
+  };
+  records.forEach(r => {
+    const u = links[r.data.name];
+    if (!u) return;
+    const f = orderField(mods.find(m => m.id === r.moduleId));
+    if (f) r.data[f.key] = u;
+  });
+  rec('plasmids', { name: 'psPAX2', plasmidId: 'pWL002', backbone: 'psPAX2', vectorType: 'Lentiviral', addgeneLink: 'https://www.addgene.org/12260/', resistance: 'AmpR', location: 'Freezer −20 °C, plasmid box', files: [] }, one(25, 'µL', 5));
 
   // Experiments: one final, one draft. Stock above already reflects what they reserved.
   const item = (r, amount, part = '') => ({ recordId: r.id, moduleId: r.moduleId, part, name: r.data.name + (part ? ` — ${partLabel(modById(r.moduleId) || mod('mice'), part)}` : ''), unit: r.unit || 'pcs', amount });
