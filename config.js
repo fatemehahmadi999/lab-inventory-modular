@@ -1,12 +1,15 @@
 /* ──────────────────────────────────────────────────────────────────────────
    config.js — the ONLY file a lab needs to edit.
 
-   As long as `firebase` is null, the app runs in DEMO MODE: everything is
-   saved in this browser only, and nothing is sent anywhere.
+   Follow README.md (Step 7) to fill this in for your lab.
 
-   To use it for real, create a NEW Firebase project for your lab (never reuse
-   the project of another app), then paste its web config below.
-   The setup guide explains every step.
+   1. labName: your lab's name.
+   2. firebase: replace `null` with the six values from YOUR lab's own
+      Firebase project (Firebase console → Project settings → Your apps).
+   3. emailjs: optional low-stock emails (README → Optional extras).
+
+   While `firebase` is null, the app shows a yellow "Demo mode" banner and
+   saves nothing online.
    ────────────────────────────────────────────────────────────────────────── */
 
 window.LAB_CONFIG = {
