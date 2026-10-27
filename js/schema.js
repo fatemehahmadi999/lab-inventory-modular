@@ -138,17 +138,17 @@ const TEMPLATES = [
     ]
   },
   {
-    tid: 'mice', name: 'Mice / PDX', singular: 'Mouse', color: 'orange',
-    description: 'Mice and PDX models, with tissue samples counted per organ.',
+    tid: 'mice', name: 'Mice', singular: 'Mouse', color: 'orange',
+    description: 'Mice, with tissue samples counted per organ.',
     stock: {
       mode: 'parts', unit: 'pcs', lowAt: 0,
-      parts: [['pt', 'PT'], ['lung', 'Lung'], ['kidney', 'Kidney'], ['ovary', 'Ovary'], ['pb', 'PB'], ['bm', 'BM'],
-        ['brain', 'Brain'], ['liver', 'Liver'], ['ft', 'FT'], ['ag', 'AG']].map(([key, label]) => ({ key, label }))
+      parts: [['blood', 'Blood'], ['bm', 'Bone marrow'], ['brain', 'Brain'], ['heart', 'Heart'], ['kidney', 'Kidney'],
+        ['liver', 'Liver'], ['lung', 'Lung'], ['spleen', 'Spleen']].map(([key, label]) => ({ key, label }))
     },
     link: 'consume',
     fields: [
       F('name', 'Mouse ID', 'text', { required: true, inList: true }),
-      F('model', 'PDX model', 'text', { inList: true }), F('year', 'Year', 'number', { inList: true }),
+      F('model', 'Model', 'text', { inList: true }), F('year', 'Year', 'number', { inList: true }),
       F('location', 'Location', 'text', { inList: true }),
       F('notes', 'Notes (passage, treatment…)', 'textarea'), F('files', 'Attachments', 'file')
     ]
