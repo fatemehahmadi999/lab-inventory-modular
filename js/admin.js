@@ -478,6 +478,7 @@ function buildOldImport(json) {
       { stock: Number(cl.vials) || 0, unit: 'vials', lowAt: mod.stock.lowAt });
     remember('cellline', cl, rec); ops.push(['set', 'records', rec.id, rec]);
   });
+  const usedParts = new Set();
   (c.pdxmodels || []).forEach(p => {
     const mod = modFor('mice');
     const notes = [p.notes || '', (p.vials || []).length ? 'Freezer vials:\n' + p.vials.map(v => '• ' + v).join('\n') : ''].filter(Boolean).join('\n\n');
@@ -485,7 +486,19 @@ function buildOldImport(json) {
     const rec = record(mod, p, { name: String(p.miceId || p.name || '').replace(/^#/, ''), model: p.model || p.origName || '', year: n0(p.year) === '' ? '' : Number(p.year) || p.year, location: p.location || '', notes, files: files(p.driveLinks) },
       { parts, unit: 'pcs' });
     remember('pdx', p, rec); ops.push(['set', 'records', rec.id, rec]);
+    Object.keys(parts).forEach(k => usedParts.add(k));
   });
+  // Old backups may count parts the generic module does not list. Add them, so no counts are hidden.
+  const oldPartLabels = { pt: 'Primary tumor', pb: 'Peripheral blood', bm: 'Bone marrow', ft: 'Fallopian tube', ag: 'Adrenal gland', ovary: 'Ovary', lung: 'Lung', liver: 'Liver', brain: 'Brain', kidney: 'Kidney' };
+  const miceModule = [...newModules, ...App.modules].find(m => m.tid === 'mice' && !m.archived) || [...newModules, ...App.modules].find(m => m.tid === 'mice');
+  if (miceModule && usedParts.size) {
+    const have = new Set((miceModule.stock.parts || []).map(p => p.key));
+    const extra = [...usedParts].filter(k => !have.has(k)).map(k => ({ key: k, label: oldPartLabels[k] || k }));
+    if (extra.length) {
+      miceModule.stock.parts = [...(miceModule.stock.parts || []), ...extra];
+      if (!newModules.includes(miceModule)) ops.unshift(['merge', 'modules', miceModule.id, { stock: miceModule.stock }]);
+    }
+  }
   (c.protocols || []).forEach(pr => {
     const mod = modFor('protocols');
     const blocks = Array.isArray(pr.blocks) && pr.blocks.length ? pr.blocks : [];
@@ -536,6 +549,6 @@ function buildOldImport(json) {
   if (lostItems) warnings.push(`${plural(lostItems, 'experiment item')} could not be matched to an imported record. They are written into the experiment notes instead.`);
   const count = col => ops.filter(o => o[1] === col).length;
   const summary = [['Materials (antibodies, reagents, kits, primers, plasmids)', (c.materials || []).length], ['Cell lines', (c.celllines || []).length],
-    ['Mice / PDX', (c.pdxmodels || []).length], ['Protocols', (c.protocols || []).length], ['Projects', count('projects')], ['Experiments', count('experiments')]];
+    ['Mice', (c.pdxmodels || []).length], ['Protocols', (c.protocols || []).length], ['Projects', count('projects')], ['Experiments', count('experiments')]];
   return { ops, newModules, warnings, summary };
 }
