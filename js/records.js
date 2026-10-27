@@ -190,7 +190,7 @@ function fieldDisplay(f, v) {
   if (isEmptyValue(v) && f.type !== 'checkbox') return '';
   switch (f.type) {
     case 'textarea': return `<div class="pre">${esc(v)}</div>`;
-    case 'number': return `<span class="num">${fmtNum(v)}</span>`;
+    case 'number': return `<span class="num">${Number.isFinite(Number(v)) ? Number(v).toLocaleString(undefined, { maximumFractionDigits: 4, useGrouping: false }) : esc(v)}</span>`;
     case 'date': {
       let badge = '';
       if (f.expiry) { const d = daysUntil(v); badge = d < 0 ? ' <span class="badge bad">Expired</span>' : d <= 30 ? ` <span class="badge warn">in ${d} d</span>` : ''; }
