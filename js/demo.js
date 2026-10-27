@@ -21,13 +21,13 @@ async function seedDemoLab(user) {
   const one = (amount, unit, lowAt) => ({ stock: amount, unit, lowAt });
 
   // Antibodies (purposes are user-added, as in a real lab)
-  const cd45 = rec('antibodies', { name: 'CD45', purpose: 'FACS', conjugate: 'APC', clone: 'HI30', reactivity: 'Human', host: 'Mouse', clonality: 'Monoclonal',
+  const cd45 = rec('antibodies', { name: 'CD45', purpose: 'Flow cytometry', conjugate: 'APC', clone: 'HI30', reactivity: 'Human', host: 'Mouse', clonality: 'Monoclonal',
     company: 'BioLegend', catalog: '304012', dilution: '1:100', location: 'Fridge 2, box A', expiry: iso(300), files: [] }, one(80, 'µL', 20));
-  const cd68 = rec('antibodies', { name: 'CD68', purpose: 'IF panel', conjugate: '', clone: 'KP1', reactivity: 'Human', host: 'Mouse', clonality: 'Monoclonal',
-    company: 'Abcam', catalog: 'ab955', dilution: '1:200', retrieval: 'pH 6 (citrate)', status: 'Validated on FFPE', location: 'Fridge 2, box B', expiry: iso(21), flag: 'Yellow', files: [] }, one(15, 'µL', 20));
-  rec('antibodies', { name: 'CD3', purpose: 'FACS', conjugate: 'PE', clone: 'UCHT1', reactivity: 'Human', company: 'BioLegend', catalog: '300408', location: 'Fridge 2, box A', files: [] }, one(0, 'µL', 20));
-  const epcam = rec('antibodies', { name: 'EpCAM', purpose: 'MACSima', conjugate: 'FITC', clone: 'REA764', company: 'Miltenyi', catalog: '130-111-116', location: 'Fridge 1', files: [] }, one(120, 'µL', 20));
-  rec('antibodies', { name: 'Ki-67', purpose: 'IF panel', conjugate: 'Alexa Fluor 647', clone: 'SolA15', company: 'Thermo Fisher', catalog: '51-5698-82', location: 'Fridge 2, box B', files: [] }, one(45, 'µL', 20));
+  const cd68 = rec('antibodies', { name: 'CD68', purpose: 'Immunofluorescence', conjugate: '', clone: 'KP1', reactivity: 'Human', host: 'Mouse', clonality: 'Monoclonal',
+    company: 'Abcam', catalog: 'ab955', dilution: '1:200', retrieval: 'pH 6 (citrate)', status: 'Validated on FFPE', location: 'Fridge 2, box B', expiry: iso(21), files: [] }, one(15, 'µL', 20));
+  rec('antibodies', { name: 'CD3', purpose: 'Flow cytometry', conjugate: 'PE', clone: 'UCHT1', reactivity: 'Human', company: 'BioLegend', catalog: '300408', location: 'Fridge 2, box A', files: [] }, one(0, 'µL', 20));
+  const epcam = rec('antibodies', { name: 'EpCAM', purpose: 'Imaging', conjugate: 'FITC', clone: 'REA764', company: 'Miltenyi', catalog: '130-111-116', location: 'Fridge 1', files: [] }, one(120, 'µL', 20));
+  rec('antibodies', { name: 'Ki-67', purpose: 'Immunofluorescence', conjugate: 'Alexa Fluor 647', clone: 'SolA15', company: 'Thermo Fisher', catalog: '51-5698-82', location: 'Fridge 2, box B', files: [] }, one(45, 'µL', 20));
 
   // Reagents & media
   rec('reagents', { name: 'PBS (1x)', type: 'Buffer', company: 'Gibco', catalog: '10010023', size: '500 mL', location: 'Shelf 3', hazards: [], files: [] }, one(6, 'bottles', 2));
@@ -47,16 +47,16 @@ async function seedDemoLab(user) {
   rec('plasmids', { name: 'pLenti-CMV-GFP', plasmidId: 'pWL001', backbone: 'pLenti', vectorType: 'Lentiviral', insert: 'EGFP', insertSize: 720, promoter: 'CMV', resistance: 'AmpR', selection: 'Puromycin', concentration: '850 ng/µL', location: 'Freezer −20 °C, plasmid box', files: [] }, one(40, 'µL', 5));
 
   // Cell lines
-  const mda = rec('celllines', { name: 'MDA-MB-231', passage: 12, frozen: iso(-60), location: 'LN2 tank, rack 3', origin: 'ATCC HTB-26', mycoplasma: 'Negative', files: [] }, one(5, 'vials', 2));
-  rec('celllines', { name: 'MCF7', passage: 8, frozen: iso(-120), location: 'LN2 tank, rack 3', origin: 'ATCC HTB-22', mycoplasma: 'Negative', files: [] }, one(1, 'vials', 2));
+  const cellA = rec('celllines', { name: 'Cell line A', passage: 12, frozen: iso(-60), location: 'LN2 tank, rack 3', origin: 'Commercial supplier', mycoplasma: 'Negative', files: [] }, one(5, 'vials', 2));
+  rec('celllines', { name: 'Cell line B', passage: 8, frozen: iso(-120), location: 'LN2 tank, rack 3', origin: 'Commercial supplier', mycoplasma: 'Negative', files: [] }, one(1, 'vials', 2));
 
-  // Mice / PDX (counted per organ)
-  const m823 = rec('mice', { name: '823', model: 'HCI010', year: 2025, location: '−80 °C, rack B', notes: 'Passage 4, untreated.', files: [] }, { parts: { pt: 3, lung: 2, liver: 2, bm: 1 }, unit: 'pcs' });
-  rec('mice', { name: '824', model: 'HCI010', year: 2025, location: '−80 °C, rack B', files: [] }, { parts: { pt: 2, lung: 3, brain: 1 }, unit: 'pcs' });
-  rec('mice', { name: '901', model: 'HCI002', year: 2026, location: '−80 °C, rack C', files: [] }, { parts: { pt: 4, lung: 1, ovary: 2 }, unit: 'pcs' });
+  // Mice (tissue samples counted per organ)
+  const m1 = rec('mice', { name: 'M-001', model: 'Model A', year: 2025, location: '−80 °C, rack B', notes: 'Untreated control.', files: [] }, { parts: { lung: 2, liver: 2, spleen: 3, bm: 1 }, unit: 'pcs' });
+  rec('mice', { name: 'M-002', model: 'Model A', year: 2025, location: '−80 °C, rack B', files: [] }, { parts: { lung: 3, brain: 1, blood: 2 }, unit: 'pcs' });
+  rec('mice', { name: 'M-003', model: 'Model B', year: 2026, location: '−80 °C, rack C', files: [] }, { parts: { lung: 1, kidney: 2, heart: 1 }, unit: 'pcs' });
 
   // Protocols (reference only)
-  const ifProt = rec('protocols', { name: 'Multiplex IF on FFPE sections', version: '2.1', summary: 'Single-round immunofluorescence on FFPE tissue, used to validate antibodies before MACSima runs.',
+  const ifProt = rec('protocols', { name: 'Multiplex IF on FFPE sections', version: '2.1', summary: 'Single-round immunofluorescence on FFPE tissue, used to validate antibodies before larger staining panels.',
     materials: [['PBS (1x)', '500', 'mL', 'room temperature'], ['BSA, fraction V', '1', 'g', '1% in PBS, prepare fresh'], ['DAPI', '1', 'µL', '1:1000 in PBS']],
     procedure: '<h3>Deparaffinize and retrieve</h3><ol><li>Bake slides 1 h at 60 °C.</li><li>Xylene 2 × 5 min, ethanol series, water.</li><li>Antigen retrieval in citrate pH 6, 20 min at 95 °C.</li></ol><h3>Stain</h3><ol><li>Block in 1% BSA for 1 h.</li><li>Primary antibody overnight at 4 °C.</li><li>Wash 3 × 5 min in PBS, then DAPI 5 min.</li></ol>',
     files: [] });
@@ -76,8 +76,8 @@ async function seedDemoLab(user) {
     'Opal 6-Plex Detection Kit': 'https://www.akoyabio.com/?s=NEL871001KT',
     'GAPDH forward': 'https://www.idtdna.com/pages/products/custom-dna-rna/dna-oligos',
     'GAPDH reverse': 'https://www.idtdna.com/pages/products/custom-dna-rna/dna-oligos',
-    'MDA-MB-231': 'https://www.atcc.org/products/htb-26',
-    'MCF7': 'https://www.atcc.org/products/htb-22'
+    'Cell line A': 'https://www.atcc.org',
+    'Cell line B': 'https://www.atcc.org'
   };
   records.forEach(r => {
     const u = links[r.data.name];
@@ -96,24 +96,24 @@ async function seedDemoLab(user) {
   };
   // partLabel needs the module list; give it the template module directly.
   const mouseMod = mod('mice');
-  const lungItem = { recordId: m823.id, moduleId: m823.moduleId, part: 'lung', name: `823 — ${mouseMod.stock.parts.find(p => p.key === 'lung').label}`, unit: 'pcs', amount: 1 };
+  const lungItem = { recordId: m1.id, moduleId: m1.moduleId, part: 'lung', name: `M-001 — ${mouseMod.stock.parts.find(p => p.key === 'lung').label}`, unit: 'pcs', amount: 1 };
   const projectId = newId();
-  const e1 = exp('CD68 validation on HCI010 lung', -9, 'final',
+  const e1 = exp('Experiment 01: antibody staining test', -9, 'final',
     [{ ...item(cd68, 10), unit: 'µL' }, { ...item(bsa, 1), unit: 'g' }, lungItem],
-    { projectId, aim: 'Check that the CD68 clone KP1 stains macrophages in PDX lung metastases.',
+    { projectId, aim: 'Test the CD68 antibody on lung sections from Model A.',
       refs: [{ recordId: ifProt.id, moduleId: ifProt.moduleId, name: ifProt.data.name }],
-      result: '<p>Clear membrane staining of macrophages around metastatic nests. No signal in the isotype control.</p>',
-      next: '<ul><li>Repeat on HCI002 tissue.</li><li>Order more CD68 — stock is low.</li></ul>', finalizedAt: now - 8 * day });
-  const e2 = exp('FACS of MDA-MB-231 co-culture', -1, 'draft',
-    [{ ...item(cd45, 20), unit: 'µL' }, { ...item(epcam, 10), unit: 'µL' }, { ...item(mda, 1), unit: 'vials' }],
-    { projectId, aim: 'Measure immune cell infiltration in a tumour–monocyte co-culture.' });
+      result: '<p>Clear, specific staining. No signal in the isotype control.</p>',
+      next: '<ul><li>Repeat on Model B tissue.</li><li>Order more CD68 — stock is low.</li></ul>', finalizedAt: now - 8 * day });
+  const e2 = exp('Experiment 02: flow cytometry run', -1, 'draft',
+    [{ ...item(cd45, 20), unit: 'µL' }, { ...item(epcam, 10), unit: 'µL' }, { ...item(cellA, 1), unit: 'vials' }],
+    { projectId, aim: 'Measure marker expression in Cell line A.' });
 
-  const project = { id: projectId, name: 'Myeloid cells in metastasis', desc: 'Example project: links the antibodies, models and experiments of one study.',
-    links: [cd45.id, cd68.id, epcam.id, m823.id, mda.id], createdAt: now - 30 * day, createdBy: who };
+  const project = { id: projectId, name: 'Project A', desc: 'Example project: links the antibodies, mice and experiments of one study.',
+    links: [cd45.id, cd68.id, epcam.id, m1.id, cellA.id], createdAt: now - 30 * day, createdBy: who };
 
   const logs = [
-    [-20, 'Created the lab "Demo Lab"'], [-12, 'Added antibody “CD68” to Antibodies'], [-9, 'Finalized experiment “CD68 validation on HCI010 lung”'],
-    [-1, 'Saved draft experiment “FACS of MDA-MB-231 co-culture” and reserved 3 items']
+    [-20, 'Created the lab "Demo Lab"'], [-12, 'Added antibody “CD68” to Antibodies'], [-9, 'Finalized experiment “Experiment 01: antibody staining test”'],
+    [-1, 'Saved draft experiment “Experiment 02: flow cytometry run” and reserved 3 items']
   ].map(([d, desc], i) => { const ts = now + d * day + i; return ['set', 'log', ts + '-demo', { ts, user: who, uid: user.uid, desc }]; });
 
   await App.store.batch([
